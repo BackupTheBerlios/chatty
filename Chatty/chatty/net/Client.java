@@ -3,8 +3,8 @@ package chatty.net;
 import java.util.ArrayList;
 import chatty.gui.ChatInstance;
 
-/**
- * TODO Parseteil optimaler gestalten (STEFAN)<br>
+/*
+ * DID parseteil "revolutioniert"
  */
 
 public class Client extends Connection {
@@ -29,15 +29,16 @@ public class Client extends Connection {
 	}
 	
 	protected void runProtocol(String txt) {
-		if(txt.startsWith("YOURID ")){
-        	myClientData().setID(Integer.valueOf(txt.substring(7)).intValue());
-        } else if(txt.startsWith("OUT ")){
+	    String[] msg = txt.split(" ",2);//Aufsplitten in Befehl und Nachricht
+	    if(msg[0].equals("YOURID")){
+        	myClientData().setID(Integer.valueOf(msg[1]).intValue());
+        } else if(msg[0].equals("OUT")){
         	//Text is angekommen
-            window.appendText(txt.substring(4));
-        } else if(txt.startsWith("ADDLI ")){
+            window.appendText(msg[1]);
+        } else if(msg[0].equals("ADDLI")){
             //Client soll in Liste hinzugefügt werden
             ClientData neu = new ClientData();
-            neu.setFromString(txt.substring(6));
+            neu.setFromString(msg[1]);
             ClientList.add(neu);
         }
 	}

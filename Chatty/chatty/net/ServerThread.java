@@ -32,18 +32,19 @@ class ServerThread extends Connection {
 	}
 	
 	protected void runProtocol(String txt) {
-		if (txt.startsWith("LOGIN")) {
+		String[] msg = txt.split(" ",2);
+	    if (msg[0].equals("LOGIN")) {
 			//Daten des Clients auslesen - ID noch fehlerhaft
 		    int IDtemp = getID();
-		    myClientData().setFromString(txt.substring(6));
+		    myClientData().setFromString(msg[1]);
 		    myClientData().setID(IDtemp);
 			server.sendToAll("OUT "+getName()+" hat den Chat betreten");
 			//Gibt jedem Client die Anweisung, den neuen in seine Liste aufzunehmen
 			server.sendToAll("ADDLI "+myClientData().convertToString());
 			server.sendClientList(this);
 			window.appendText(getName()+" eingeloggt");
-		} else if (txt.startsWith("SENDTOALL")) {
-			server.sendToAll("OUT "+getName()+": "+txt.substring(10));
+		} else if (msg[0].equals("SENDTOALL")) {
+			server.sendToAll("OUT "+getName()+": "+msg[1]);
 		}
 	}
 }
