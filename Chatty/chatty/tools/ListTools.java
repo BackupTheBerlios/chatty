@@ -1,8 +1,6 @@
 package chatty.tools;
 
 import java.awt.Color;
-import java.util.Iterator;
-import java.util.TreeSet;
 import javax.swing.DefaultListModel;
 
 import chatty.net.ClientData;
@@ -19,24 +17,12 @@ public class ListTools {
     
     public static void nextColor(){
         currentColor++;
+        if(currentColor>=colors.length)
+    	    currentColor = 0;
     }
     
     static public Color getColor() {
-    	if(currentColor>=colors.length)
-    	    currentColor=0;
-        Color color = colors[currentColor];
-    	return color;
-    }
-    
-    static public void sortClientList(DefaultListModel list){
-        TreeSet s = new TreeSet(new ClientComparator());
-        for(int i = 0;i<list.size();i++)
-            s.add(list.elementAt(i));
-        
-        Iterator it = s.iterator();
-        list.clear();
-        for(int i=0;it.hasNext();i++)
-            list.add(i,it.next());
+    	return colors[currentColor];
     }
     
     static private int compare(Object o1, Object o2) {

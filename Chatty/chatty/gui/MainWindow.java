@@ -86,14 +86,14 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 
 		//Content Pane - Center
 		JPanel pc = new JPanel(new BorderLayout());
+		
+		//ChatArea
 		chatArea = new ChatArea();
-		//taOut.setLineWrap(true);
 		JScrollPane scrollLog = new JScrollPane(chatArea);
 		scrollLog.setPreferredSize(new Dimension(520, 480));
 		scrollLog.setBorder(BorderFactory.createEtchedBorder());
 		pc.add(scrollLog, BorderLayout.WEST);
-		
-		//Seitliche Liste mit Chattern die Online sind
+		//PersonList
 		personList = new PersonList(120,480);
 		pc.add(personList.getPane(), BorderLayout.EAST);
 		
