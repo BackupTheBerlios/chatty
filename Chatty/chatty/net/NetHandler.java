@@ -25,6 +25,10 @@ public class NetHandler {
 		server.stopServer();
 	}
 	
+	public boolean isServer() {
+		return server.isRunning();
+	}
+	
 	//Client Handling
 	public void connect(String address) {
 		client.connect(address);
@@ -36,6 +40,10 @@ public class NetHandler {
 	
 	public void send(String txt) {
 		client.send(txt);
+	}
+	
+	public boolean isConnected() {
+		return client.isConnected();
 	}
 	
 	//Handling von Server und Client

@@ -23,19 +23,21 @@ class Server implements Runnable {
 		try {
 			serverSocket = new ServerSocket(1111);
 			System.out.println("Chattyserver - Hochgefahren");
-			serverSocket.setSoTimeout(1000);
 		} catch (Exception e) {
 			System.err.println("Chattyserver - Hochfahren des Servers nicht möglich");
 			return;
 		}
 		list = new ArrayList();
 		Thread thread = new Thread(this);
-		thread.start();
-		
+		thread.start();	
+	}
+	
+	boolean isRunning() {
+		return serverSocket!=null;
 	}
 	
 	void stopServer() {
-		if (serverSocket==null)
+		if (!isRunning())
 			return;
 		//Runterfahren des Servers
 		System.out.println("Chattyserver - Entfernen des Servers");
@@ -46,7 +48,6 @@ class Server implements Runnable {
 		//Entfernen der vorhandenen ServerThreads
 		if (list==null) 
 			return;
-		System.out.println(list.size());
 		while (!list.isEmpty()) {
 			ServerThread t = (ServerThread)(list.get(0));
 			System.out.println("Chattyserver - Entfernen des Serverthreads #"+t.getID());
@@ -56,7 +57,7 @@ class Server implements Runnable {
 	
 	public void run() {
 		System.out.println("Chattyserver - Warten begonnen");
-		while (serverSocket!=null) {
+		while (isRunning()) {
 			try {
 				Socket socket = serverSocket.accept();
 				ServerThread thread = new ServerThread(socket,freeID,this,window);

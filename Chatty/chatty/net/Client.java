@@ -18,16 +18,15 @@ public class Client implements Runnable {
 	private BufferedWriter out;
 	private int ID;
 	
-	public Client(ChatInstance window) {
+	Client(ChatInstance window) {
 		this.window = window;
-		isConnected = false;
 		socket = null;
 		in = null;
 		out = null;
 		ID = 0;
 	}
 	
-	public void connect(String address) {
+	void connect(String address) {
 		if (address==null)
 			return;
 		//alte verbindung trennen
@@ -46,12 +45,10 @@ public class Client implements Runnable {
 	    //verbindung herstellen
 	    try {
 	    	socket = new Socket(ip,port);
-	    	socket.setSoTimeout(1000);
 	    	in = new BufferedReader(
 	    			new InputStreamReader(socket.getInputStream()));
 	    	out = new BufferedWriter(
 	    			new OutputStreamWriter(socket.getOutputStream()));
-	    	isConnected = true;
 	    	window.clearText();
 	    	window.appendText("Verbindung mit Server hergestellt");
 	    } catch (Exception e) {
@@ -60,33 +57,38 @@ public class Client implements Runnable {
 	    	out = null;
 	    	window.appendText("Verbindung mit Server nicht möglich");
 	    }
-	    window.setConnected(isConnected);
-	    if (isConnected) {
+	    if (socket!=null) {
 	    	//thread starten
+	    	isConnected=true;
 	    	Thread t = new Thread(this);
 	    	t.start();
 	    }
+	    window.updateNetStatus();
 	}
 	  
-	public void disconnect() {
-		if (!isConnected)
-			return;
-		window.appendText("Verbindung wird getrennt");
-		isConnected = false;
-		window.setConnected(false);
-		try {
-			out.flush();
-			out.close();
-			socket.close();
-		} catch (Exception e) {
-			window.appendText("Fehler beim Trennen der Verbindung");
+	void disconnect() {
+		if (isConnected){
+			isConnected=false;
+			window.appendText("Verbindung wird getrennt");
+			try {
+				out.flush();
+				out.close();
+				socket.close();
+			} catch (Exception e) {
+				window.appendText("Fehler beim Trennen der Verbindung");
+			}
+			in = null;
+			out = null;
+			socket = null;
+			window.updateNetStatus();
 		}
-		in = null;
-		out = null;
-		socket = null;
+	}
+	
+	boolean isConnected() {
+		return isConnected;
 	}
 		
-	public void send(String txt) {
+	void send(String txt) {
 		if (isConnected);
 		try {
 			out.write(txt);
@@ -107,8 +109,13 @@ public class Client implements Runnable {
 					disconnect();
 					continue;
 				}
-			} catch (Exception e) {
+			} catch (SocketException e) {
+				//Client wurde heruntergefahren (socket closed) 
+				//oder Server abgebrochen (connection reset)
+				disconnect();
 				continue;
+			} catch (Exception e) {
+				window.appendText("Verbindungsfehler");
 			}
 			protocolIncoming(txt);
         }

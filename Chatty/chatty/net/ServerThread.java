@@ -8,6 +8,7 @@ import java.net.*;
 class ServerThread implements Runnable {
 	private Server server;
 	private ChatInstance window;
+	private boolean isConnected;
 	private Socket socket;
 	private int ID;
 	private BufferedReader in;
@@ -22,8 +23,7 @@ class ServerThread implements Runnable {
 		this.server = server;
 		this.ID = ID;
 		this.socket = socket;
-		socket.setSoTimeout(1000);
-		
+		isConnected=true;
 		in = new BufferedReader(
 				new InputStreamReader(socket.getInputStream()));
 		out = new BufferedWriter(
@@ -35,6 +35,9 @@ class ServerThread implements Runnable {
 	}
 	
 	void disconnect() {
+		if (!isConnected)
+			return;
+		isConnected=false;
 		try {
 			out.flush();
 			out.close();
@@ -50,22 +53,21 @@ class ServerThread implements Runnable {
 	public void run() {
 		protocolStart();
 		System.out.println("Chattyserver - Beginne Warten auf Input von Client #"+ID);
-		while (socket!=null) {
-			String txt;
+		while (isConnected) {
+			String txt = null;
 			try {
-				System.out.println("vorreadl");
 			    txt = in.readLine();
-			    System.out.println("nachread");
-				if (txt==null) {
-					System.err.println("client weg");
-				    disconnect();
-					continue;
-				}
-			} catch (Exception e) {
-				System.out.println("except");
-				//TODO Hängeproblem beim brutalen Trennen
-				//disconnect();
+			    if (txt==null) { // Verbindung wurde von Client aktiv beendet
+			    	disconnect();
+			    	continue;
+			    }
+			} catch (SocketException e) {
+				//Server wurde heruntergefahren (socket closed) 
+				//oder Client abgebrochen (connection reset)
+				disconnect();
 				continue;
+			} catch (Exception e) {
+				System.err.println("Chattyserver - Verbindungsfehler");
 			}
 			protocolIncoming(txt);
 		}		    
