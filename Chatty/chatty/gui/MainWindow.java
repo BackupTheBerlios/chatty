@@ -192,7 +192,8 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 	}
 
 	public void addToList(ClientData newClient) {
-		clientList.addElement(newClient);
+	    ListTools.nextColor();
+	    clientList.addElement(newClient);
 		Object o = clientList.get(clientJList.getSelectedIndex());
 		ListTools.sortClientList(clientList);
 		clientJList.setSelectedIndex(clientList.indexOf(o));
