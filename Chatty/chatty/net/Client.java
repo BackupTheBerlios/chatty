@@ -1,16 +1,19 @@
 package chatty.net;
 
+import java.util.ArrayList;
 import chatty.gui.ChatInstance;
 
 /**
  * TODO Parseteil optimaler gestalten (STEFAN)<br>
- * 		Username Anmeldung (Martin)
  */
 
 public class Client extends Connection {
 	
-	Client(ChatInstance window) {
+	private ArrayList ClientList;
+    
+    Client(ChatInstance window) {
 		super(window);
+		ClientList = new ArrayList();
 	}
 	
 	void sendMessage(String txt) {
@@ -22,14 +25,20 @@ public class Client extends Connection {
 	}
 	
 	protected void initProtocol() {
-		send("LOGIN "+getName());
+		send("LOGIN "+myClientData().convertToString());
 	}
 	
 	protected void runProtocol(String txt) {
-		if(txt.substring(0,7).equals("YOURID ")){
-        	ID = Integer.valueOf(txt.substring(7)).intValue();
-        } else if(txt.substring(0,4).equals("OUT ") || true){
-        	window.appendText(txt.substring(4));
+		if(txt.startsWith("YOURID ")){
+        	myClientData().setID(Integer.valueOf(txt.substring(7)).intValue());
+        } else if(txt.startsWith("OUT ")){
+        	//Text is angekommen
+            window.appendText(txt.substring(4));
+        } else if(txt.startsWith("ADDLI ")){
+            //Client soll in Liste hinzugefügt werden
+            ClientData neu = new ClientData();
+            neu.setFromString(txt.substring(6));
+            ClientList.add(neu);
         }
 	}
 

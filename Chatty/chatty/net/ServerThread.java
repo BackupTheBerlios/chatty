@@ -10,32 +10,37 @@ class ServerThread extends Connection {
 			ChatInstance window) throws Exception {
 		super(window);
 		this.server = server;
-		this.ID = ID;
+		myClientData().setID(ID);
 		if(!connect(socket))
 			throw new Exception();
 	}
 	
 	protected void onDisconnection(){
 		server.removeServerThread(this);
-		server.sendToAll("OUT "+getName()+" hat den Chat verlassen");
+	    server.sendToAll("OUT "+getName()+" hat den Chat verlassen");
 		window.appendText(getName()+" ausgeloggt");
 	}
 	
 	protected void initProtocol() {
 		try {
-		    send("YOURID "+ID);
+		    send("YOURID "+getID());
 		    send("OUT Hallo auf Server "+server.getName());
 		} catch (Exception e) {
-			window.appendError("Verbindungsfehler mit Client #"+ID);
+			window.appendError("Verbindungsfehler mit Client #"+getID());
 			disconnect();
 		}		
 	}
 	
 	protected void runProtocol(String txt) {
 		if (txt.startsWith("LOGIN")) {
-			//Name des Clients einlesen
-			setName(txt.substring(6));
+			//Daten des Clients auslesen - ID noch fehlerhaft
+		    int IDtemp = getID();
+		    myClientData().setFromString(txt.substring(6));
+		    myClientData().setID(IDtemp);
 			server.sendToAll("OUT "+getName()+" hat den Chat betreten");
+			//Gibt jedem Client die Anweisung, den neuen in seine Liste aufzunehmen
+			server.sendToAll("ADDLI "+myClientData().convertToString());
+			server.sendClientList(this);
 			window.appendText(getName()+" eingeloggt");
 		} else if (txt.startsWith("SENDTOALL")) {
 			server.sendToAll("OUT "+getName()+": "+txt.substring(10));

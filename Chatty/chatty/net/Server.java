@@ -61,6 +61,7 @@ class Server implements Runnable {
 			window.appendText("Entfernen des Serverthreads #"+t.getID());
 			t.disconnect();
 		}
+		window.appendText("Server ordnungsgem‰ﬂ heruntergefahren");
 	}
 	
 	public void run() {
@@ -82,6 +83,18 @@ class Server implements Runnable {
 		for (int i=0; i<list.size(); i++) {
 			ServerThread t = (ServerThread)(list.get(i));
 			t.send(txt);
+		}
+	}
+	
+	/**
+	 * Sendet die Liste mit den schon verbundenen Clients
+	 * @param ServerThread der Liste erhalten soll
+	 */
+	void sendClientList(ServerThread thread){
+	    for (int i=0; i<list.size(); i++) {
+			ServerThread t = (ServerThread)(list.get(i));
+			if(t!=thread)
+			    thread.send("ADDLI "+t.myClientData().convertToString());
 		}
 	}
 		

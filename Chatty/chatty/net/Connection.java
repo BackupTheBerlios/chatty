@@ -10,29 +10,33 @@ import chatty.gui.ChatInstance;
 
 abstract class Connection implements Runnable{
 	
-	protected int ID;
 	protected ChatInstance window;
-	private String name;
 	private boolean isConnected;
 	private Socket socket;
 	private BufferedReader in;
 	private BufferedWriter out;
+	private ClientData clientData;
 	
 	Connection(ChatInstance window){
 		this.window=window;
 		this.isConnected=false;
 		this.socket=null;
-		this.ID=-1;
 		this.in=null;
 		this.out=null;
+		clientData = new ClientData();
+		clientData.setID(-1);
 	}
 	
 	String getName() {
-		return name;
+		return clientData.getName();
 	}
 	
 	void setName(String name) {
-		this.name = name;
+		clientData.setName(name);
+	}
+	
+	ClientData myClientData(){
+	    return clientData;
 	}
 	
 	boolean connect(String address) {
@@ -149,14 +153,14 @@ abstract class Connection implements Runnable{
 				disconnect();
 				continue;
 			} catch (Exception e) {
-				window.appendError("Verbindungsproblem durch ID"+ID);
+				window.appendError("Verbindungsproblem durch ID"+getID());
 			}
 			runProtocol(txt);
 		}		    
 	}
 	
 	int getID() {
-		return ID;
+		return clientData.getID();
 	}
 	
 	boolean send(String txt) {
