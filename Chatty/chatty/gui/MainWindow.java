@@ -219,7 +219,7 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		} else if (src == miAbout) {
 			JOptionPane.showMessageDialog(this,
 					"Chatty\nby Martin Siggel und Stefan Schell\n"
-							+ "© 2004 - alle Rechte vorbehalten", "Chatty",
+							+ "© 2005 - alle Rechte vorbehalten", "Chatty",
 					JOptionPane.INFORMATION_MESSAGE);
 
 			//Senden
