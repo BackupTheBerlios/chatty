@@ -20,6 +20,8 @@ public class NetHandler {
 		//Hier vielleicht nen Fehlerdialog ausgeben
 	    if(server.startServer())
 		    client.connect("localhost");
+	    else
+	        window.appendError("Server konnte nicht erstellt werden");
 	}
 	
 	public void stopServer() {

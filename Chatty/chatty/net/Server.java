@@ -95,7 +95,7 @@ class Server implements Runnable {
 	    for (int i=0; i<list.size(); i++) {
 			ServerThread t = (ServerThread)(list.get(i));
 			if(t!=thread)
-			    thread.send("ADDLI "+t.myClientData().convertToString());
+			    thread.send("ADDCL "+t.myClientData().convertToString());
 		}
 	}
 		

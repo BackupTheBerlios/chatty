@@ -37,25 +37,28 @@ public class Client extends Connection {
         	//Text is angekommen
             window.appendText(msg[1]);
             
-        } else if(msg[0].equals("ADDLI")){
+        } else if(msg[0].equals("ADDCL")){
             //Client soll in Liste hinzugefügt werden
             ClientData neu = new ClientData();
             neu.setFromString(msg[1]);
             ClientList.add(neu);
             window.addToList(neu);
-        } else if(msg[0].equals("REMLI")){
+        } else if(msg[0].equals("REMCL")){
             ClientData clientToRemove = new ClientData();
             clientToRemove.setFromString(msg[1]);
             removeFromClientList(clientToRemove);
             window.removeFromList(clientToRemove);
+            window.appendText(clientToRemove.getName()+" hat den Chat verlassen");
         }
 	}
         
         private void removeFromClientList(ClientData clientToRemove){
             for(int i=0;i<ClientList.size();i++){
                 ClientData c = (ClientData)ClientList.get(i);
-                if(clientToRemove.getID()==c.getID())
+                if(clientToRemove.getID()==c.getID()){
                     ClientList.remove(i);
+                    return;
+                }
             }
         }
 

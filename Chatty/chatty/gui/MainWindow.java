@@ -160,7 +160,7 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 	}
 	
 	public void appendError(String txt) {
-		appendText("FEHLER: "+txt);
+	    JOptionPane.showMessageDialog(this,txt,"Fehler",JOptionPane.ERROR_MESSAGE);
 	}
 
 	public void clearText() {
@@ -174,8 +174,10 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
    public void removeFromList(ClientData clientToRemove){
         for(int i=0;i<clientList.size();i++){
             ClientData c = (ClientData)clientList.get(i);
-            if(clientToRemove.getID()==c.getID())
+            if(clientToRemove.getID()==c.getID()){
                 clientList.remove(i);
+                return;
+            }
         }
     }
     

@@ -17,8 +17,7 @@ class ServerThread extends Connection {
 	
 	protected void onDisconnection(){
 		server.removeServerThread(this);
-	    server.sendToAll("OUT "+getName()+" hat den Chat verlassen");
-		server.sendToAll("REMLI "+myClientData().convertToString());
+		server.sendToAll("REMCL "+myClientData().convertToString());
 	    window.appendText(getName()+" ausgeloggt");
 	}
 	
@@ -32,18 +31,22 @@ class ServerThread extends Connection {
 		}		
 	}
 	
+	private void loginClient(String daten){
+	    //Daten des Clients auslesen - ID noch fehlerhaft
+	    int IDtemp = getID();
+	    myClientData().setFromString(daten);
+	    myClientData().setID(IDtemp);
+		//Gibt jedem Client die Anweisung, den neuen in seine Liste aufzunehmen
+		server.sendToAll("ADDCL "+myClientData().convertToString());
+		server.sendToAll("OUT "+getName()+" hat den Chat betreten");
+		server.sendClientList(this);
+		window.appendText(getName()+" eingeloggt");
+	}
+	
 	protected void runProtocol(String txt) {
 		String[] msg = txt.split(" ",2);
 	    if (msg[0].equals("LOGIN")) {
-			//Daten des Clients auslesen - ID noch fehlerhaft
-		    int IDtemp = getID();
-		    myClientData().setFromString(msg[1]);
-		    myClientData().setID(IDtemp);
-			server.sendToAll("OUT "+getName()+" hat den Chat betreten");
-			//Gibt jedem Client die Anweisung, den neuen in seine Liste aufzunehmen
-			server.sendToAll("ADDLI "+myClientData().convertToString());
-			server.sendClientList(this);
-			window.appendText(getName()+" eingeloggt");
+			loginClient(msg[1]);
 		} else if (msg[0].equals("SENDTOALL")) {
 			server.sendToAll("OUT "+getName()+": "+msg[1]);
 		}
