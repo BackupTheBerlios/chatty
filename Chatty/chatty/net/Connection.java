@@ -27,19 +27,19 @@ abstract class Connection implements Runnable{
 		clientData.setID(-1);
 	}
 	
-	String getName() {
+	final String getName() {
 		return clientData.getName();
 	}
 	
-	void setName(String name) {
+	final void setName(String name) {
 		clientData.setName(name);
 	}
 	
-	ClientData myClientData(){
+	final ClientData myClientData(){
 	    return clientData;
 	}
 	
-	boolean connect(String address) {
+	final boolean connect(String address) {
 		//alte verbindung trennen
 		disconnect();
 	    //neue verbindungsdaten extrahieren
@@ -69,7 +69,7 @@ abstract class Connection implements Runnable{
 	    return true;
 	}
 	
-	boolean connect(Socket socket) {
+	final boolean connect(Socket socket) {
 		//alte verbindung trennen
 		disconnect();
 		//verbindung herstellen
@@ -89,7 +89,7 @@ abstract class Connection implements Runnable{
 	 * Initialisiert IO Objekte
 	 * @throws Fehler wenn Verbindung nicht hergestellt (Exception)
 	 */
-	private void connectionDetails() throws Exception {
+	final private void connectionDetails() throws Exception {
 		try {
 	    	in = new BufferedReader(
 	    			new InputStreamReader(socket.getInputStream()));
@@ -108,7 +108,7 @@ abstract class Connection implements Runnable{
 	    window.updateNetStatus();
 	}
 	
-	boolean isConnected() {
+	final boolean isConnected() {
 		return isConnected;
 	}
 	
@@ -118,7 +118,7 @@ abstract class Connection implements Runnable{
 	 */
 	abstract protected void onDisconnection();
 	
-	synchronized void disconnect(){
+	final synchronized void disconnect(){
 		if (isConnected) {
 			isConnected=false;
 			window.appendText("Verbindung wird getrennt");
@@ -159,7 +159,7 @@ abstract class Connection implements Runnable{
 		}		    
 	}
 	
-	int getID() {
+	final int getID() {
 		return clientData.getID();
 	}
 	

@@ -8,6 +8,7 @@ package chatty.gui;
 
 import chatty.net.ClientData;
 import chatty.net.NetHandler;
+import chatty.tools.ListTools;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -169,8 +170,9 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		taOut.setText("");
 	}
 	
-    public void addToList(ClientData newClient) {
+	public void addToList(ClientData newClient) {
         clientList.addElement(newClient);
+        ListTools.sortClientList(clientList);
     }
 
    public void removeFromList(ClientData clientToRemove){
@@ -183,7 +185,6 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
         }
     }
     
-
 	//EventHandling - ActionListener
 	public void actionPerformed(ActionEvent event) {
 		Object src = event.getSource();
