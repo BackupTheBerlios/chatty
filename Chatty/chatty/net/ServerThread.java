@@ -17,13 +17,13 @@ class ServerThread extends Connection {
 	
 	protected void onDisconnection(){
 		server.removeServerThread(this);
-		server.sendToAll("REMCL * "+getClientData().convertToString());
+		server.sendToAll("REMCL "+getClientData().getID());
 	    window.appendText(getClientData().getName()+" ausgeloggt",this);
 	}
 	
 	protected void initProtocol() {
 		try {
-		    send("YOURID * "+getClientData().getID());
+		    send("YOURID "+getClientData().getID());
 		    send("OUT * Hallo auf Server "+server.getName());
 		} catch (Exception e) {
 			window.appendError("Verbindungsfehler mit Client #"+getClientData().getID());
@@ -51,7 +51,8 @@ class ServerThread extends Connection {
 			server.sendToAll("OUT "+getClientData().getID()+" "+msg[2]);
 		} else if (msg[0].equals("SEND")){
 			int ID = Integer.parseInt(msg[1]);
-			server.sendTo(this,ID,"OUT "+getClientData().getID()+" "+msg[2]);
+			server.sendTo(ID,"OUT "+getClientData().getID()+" "+msg[2]);
+			//und nochmal an mich selbst
 			if (ID!=getClientData().getID())
 				send("OUT "+getClientData().getID()+" "+msg[2]);
 		}

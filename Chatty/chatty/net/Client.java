@@ -35,7 +35,7 @@ public class Client extends Connection {
 	protected void runProtocol(String txt) {
 	    String[] msg = txt.split(" ",3);//Aufsplitten in Befehl und Nachricht
 	    if(msg[0].equals("YOURID")){
-        	getClientData().setID(Integer.valueOf(msg[2]).intValue());
+        	getClientData().setID(Integer.valueOf(msg[1]).intValue());
         } else if(msg[0].equals("OUT")){
         	//Text is angekommen
         	ClientData source = null;
@@ -51,8 +51,8 @@ public class Client extends Connection {
             clientList.add(neu);
             window.addToList(neu);
         } else if(msg[0].equals("REMCL")){
-            ClientData clientToRemove = new ClientData();
-            clientToRemove.setFromString(msg[2]);
+            int ID = Integer.parseInt(msg[1]);
+            ClientData clientToRemove = clientList.getClientByID(ID);
             removeFromClientList(clientToRemove);
             window.removeFromList(clientToRemove);
             window.appendText(clientToRemove.getName()+" hat den Chat verlassen",null);

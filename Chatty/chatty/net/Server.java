@@ -80,7 +80,7 @@ public class Server implements Runnable {
 	    list.remove(t);
 	}
 	
-	void sendTo(ServerThread from, int toID,String msg){
+	void sendTo(int toID,String msg){
 		for (int i=0; i<list.size();i++) {
 			ServerThread thread = (ServerThread)(list.get(i));
 			if (thread.getClientData().getID()==toID) {
