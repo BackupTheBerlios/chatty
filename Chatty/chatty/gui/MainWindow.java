@@ -11,7 +11,6 @@ import chatty.tools.ListTools;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.text.*;
 
 public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		WindowListener {
@@ -23,7 +22,7 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 
 	private JButton bConnect, bSend;
 
-	private JTextPane taOut;
+	private ChatArea chatArea;
 
 	private JTextField tfIn;
 
@@ -93,11 +92,9 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 
 		//Content Pane - Center
 		JPanel pc = new JPanel(new BorderLayout());
-		taOut = new JTextPane();
-		taOut.setFont(new Font("Serif", Font.PLAIN, 14));
-		taOut.setEditable(false);
+		chatArea = new ChatArea();
 		//taOut.setLineWrap(true);
-		JScrollPane scrollLog = new JScrollPane(taOut);
+		JScrollPane scrollLog = new JScrollPane(chatArea);
 		scrollLog.setPreferredSize(new Dimension(520, 480));
 		scrollLog.setBorder(BorderFactory.createEtchedBorder());
 		pc.add(scrollLog, BorderLayout.WEST);
@@ -164,22 +161,7 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 	}
 
 	public void appendText(String txt,Object source) {
-		Document doc = taOut.getDocument();
-		String name = "";
-		SimpleAttributeSet attribute = new SimpleAttributeSet();
-		if(source instanceof ClientData){
-			ClientData user = (ClientData)source;
-			name = user.getName()+": ";
-			StyleConstants.setForeground(attribute,user.getColor());
-			if (user.getID()==nethandler.getClientData().getID())
-				StyleConstants.setItalic(attribute,true);				
-		} else if (source==null) {
-			StyleConstants.setBold(attribute,true);
-		}
-		try {
-			doc.insertString(doc.getLength(),name+txt+'\n',attribute);
-		} catch (Exception e) {}
-		taOut.setCaretPosition(doc.getLength());
+		chatArea.appendText(nethandler,txt,source);
 	}
 
 	public void appendError(String txt) {
@@ -188,7 +170,7 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 	}
 
 	public void clearText() {
-		taOut.setText("");
+		chatArea.clear();
 	}
 
 	public void addToList(ClientData newClient) {
