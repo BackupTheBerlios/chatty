@@ -193,18 +193,19 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 
 	public void addToList(ClientData newClient) {
 		clientList.addElement(newClient);
+		Object o = clientList.get(clientJList.getSelectedIndex());
 		ListTools.sortClientList(clientList);
+		clientJList.setSelectedIndex(clientList.indexOf(o));
 	}
 
 	public void removeFromList(ClientData clientToRemove) {
-		for (int i = 0; i < clientList.size(); i++) {
-			Object c = clientList.get(i);
-			if (!(c instanceof String))
-				if (clientToRemove.getID() == ((ClientData) c).getID()) {
-					clientList.remove(i);
-					return;
-				}
-		}
+	    Object o = clientList.get(clientJList.getSelectedIndex());
+	    ListTools.removeFromClientList(clientList,clientToRemove);
+	    int i = clientList.indexOf(o);
+	    //wenn selektierter client gelöscht, selektiere alle
+	    if (i<0)
+	        i=0;
+	    clientJList.setSelectedIndex(i);
 	}
 
 	//EventHandling - ActionListener
