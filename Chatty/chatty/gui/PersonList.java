@@ -35,6 +35,7 @@ public class PersonList extends DefaultListModel {
 		scrollList.setBorder(BorderFactory.createEtchedBorder());
     }
     
+    //beim Neuverbinden soll immer ALle ganz oben Stehen
     void initOnConnect(){
         String alle = "Alle";
 		addElement(alle);
@@ -42,25 +43,29 @@ public class PersonList extends DefaultListModel {
     }
     
 
+    //Gibt in Liste ausgewähltes Objekt zurück
     Object getSelected(){
         return clientJList.getSelectedValue();
     }
     
     void addPerson(ClientData newClient){
         ListTools.nextColor();
-        addElement(newClient);
         Object o = get(clientJList.getSelectedIndex());
-        ListTools.sortClientList(this);
+        //einfügen in schon SORTIERTE Liste an richtiger Stelle
+        ListTools.insertInList(this,newClient);
         clientJList.setSelectedIndex(indexOf(o));
     }
     
+    /**
+     *Löscht Client aus Liste. Wenn er selektiert war,
+     *wird Auswahl auf Alle gesetzt
+     */
     void remove(ClientData clientToRemove) {
 	    Object o = get(clientJList.getSelectedIndex());
 	    ListTools.removeFromClientList(this,clientToRemove);
 	    int i = indexOf(o);
 	    //wenn selektierter client gelöscht, selektiere alle
-	    if (i<0)
-	        i=0;
+	    if (i<0) i=0;
 	    clientJList.setSelectedIndex(i);
 	}
     
