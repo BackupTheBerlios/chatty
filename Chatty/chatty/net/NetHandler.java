@@ -15,7 +15,6 @@ public class NetHandler {
 		client = new Client(window);
 	}
 	
-	
 	//Sever Handling
 	public void startServer() {
 		server.startServer();
@@ -39,8 +38,8 @@ public class NetHandler {
 		client.disconnect();
 	}
 	
-	public void send(String txt) {
-		client.send(txt);
+	public void sendMessage(String txt) {
+		client.sendMessage(txt);
 	}
 	
 	public boolean isConnected() {
@@ -48,11 +47,18 @@ public class NetHandler {
 	}
 	
 	//Handling von Server und Client
+	public void setName(String name) {
+		client.setName(name);
+		server.setName(name);
+	}
+	
+	public String getClientName() {
+		return client.getName();
+	}
+	
 	public void exit() {
 		stopServer();
 		disconnect();
 	}
 	
-	
-
 }

@@ -1,5 +1,9 @@
 package chatty.gui;
 
+/**
+ * Hauptfenster für Chattyclient
+ */
+
 import chatty.net.NetHandler;
 import java.awt.*;
 import java.awt.event.*;
@@ -109,10 +113,17 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		pack();
 		setResizable(false);
 		setVisible(true);
-
+		
 		//NetHandler erstellen
 		nethandler = new NetHandler(this);
 		updateNetStatus();
+		
+		//Username erfragen
+		String name = null;
+		while (name==null)
+			name = JOptionPane.showInputDialog(this,"Username","Usernamen wählen",
+				JOptionPane.QUESTION_MESSAGE);
+		nethandler.setName(name);
 	}
 
 	//Methoden der ChatInstance
@@ -120,7 +131,7 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 	public void updateNetStatus() {
 		String t = "Chatty";
 		if (nethandler.isConnected()) {
-			t += " - verbunden";
+			t += " - verbunden als " + nethandler.getClientName();
 			tfIn.requestFocus();
 		} else {
 			t += " - nicht verbunden";
@@ -152,6 +163,8 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		if (src == bConnect || src == miConnect) {
 			String s = JOptionPane.showInputDialog("address:port or address",
 					"localhost");
+			if (s==null)
+				return;
 			nethandler.connect(s);
 
 			//Menu - Chatty Verbindung trennen
@@ -181,7 +194,7 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 			//Senden
 		} else if (src == bSend || (src == tfIn && bSend.isEnabled())) {
 			String txt = tfIn.getText();
-			nethandler.send(txt);
+			nethandler.sendMessage(txt);
 			tfIn.requestFocus();
 			tfIn.selectAll();
 		}

@@ -6,6 +6,7 @@ import java.util.*;
 
 class Server implements Runnable {
 	
+	private String name;
 	private ChatInstance window;
 	private ServerSocket serverSocket;
 	private ArrayList list;
@@ -15,16 +16,23 @@ class Server implements Runnable {
 		this.window = window;
 	}
 	
+	void setName(String name) {
+		this.name = name;
+	}
+	
+	String getName() {
+		return name;
+	}
+	
 	void startServer() {
 		//Alten Server runterfahren
 		stopServer();
 		//Neuen Server hochfahren
-		System.out.println("Chattyserver - Hochfahren");
 		try {
 			serverSocket = new ServerSocket(1111);
-			System.out.println("Chattyserver - Hochgefahren");
+			window.appendText("Hochgefahren");
 		} catch (Exception e) {
-			System.err.println("Chattyserver - Hochfahren des Servers nicht möglich");
+			window.appendError("Hochfahren nicht möglich");
 			return;
 		}
 		list = new ArrayList();
@@ -40,7 +48,7 @@ class Server implements Runnable {
 		if (!isRunning())
 			return;
 		//Runterfahren des Servers
-		System.out.println("Chattyserver - Entfernen des Servers");
+		window.appendText("Entfernen des Servers");
 		try {
 			serverSocket.close();
 		} catch (Exception e) {}
@@ -50,44 +58,30 @@ class Server implements Runnable {
 			return;
 		while (!list.isEmpty()) {
 			ServerThread t = (ServerThread)(list.get(0));
-			System.out.println("Chattyserver - Entfernen des Serverthreads #"+t.getID());
+			window.appendText("Entfernen des Serverthreads #"+t.getID());
 			t.disconnect();
-			
 		}
 	}
 	
 	public void run() {
-		System.out.println("Chattyserver - Warten begonnen");
 		while (isRunning()) {
 			try {
 				Socket socket = serverSocket.accept();
-				ServerThread thread = new ServerThread(socket,freeID,this,window);
-				sendToAll("hat den Chat betreten",freeID);				
+				ServerThread thread = new ServerThread(this,freeID,socket,window);				
 				list.add(thread);
 				freeID++;
 			} catch (Exception e) {}
 		}
-		System.out.println("Chattyserver - Warten beendet");
 	}
 	
 	void removeServerThread(ServerThread t){
 	    list.remove(t);
-	    sendToAll("hat den Chat verlassen",t.getID());
 	}
 	
-	void sendToAll(String txt,int ID){
+	void sendToAll(String txt){
 		for (int i=0; i<list.size(); i++) {
 			ServerThread t = (ServerThread)(list.get(i));
-			try{
-			    if(ID==t.getID()){
-			        t.send("OUT "+"ME: "+txt);
-			    }
-			    else{
-			      t.send("OUT "+"Client"+ID+": "+txt);
-			    }
-			} catch(Exception e){
-			    System.err.println("Chattyserver - Send error!");
-			}
+			t.send(txt);
 		}
 	}
 		

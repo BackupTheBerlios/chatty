@@ -1,22 +1,22 @@
 package chatty.net;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
-import java.net.SocketException;
-
+import java.io.*;
+import java.net.*;
 import chatty.gui.ChatInstance;
+
+/**
+ * Oberklasse für Client, Server und sonstige Verbindungen
+ */
 
 abstract class Connection implements Runnable{
 	
-	protected ChatInstance window;
-	protected boolean isConnected;
-	protected Socket socket;
 	protected int ID;
-	protected BufferedReader in;
-	protected BufferedWriter out;
+	protected ChatInstance window;
+	private String name;
+	private boolean isConnected;
+	private Socket socket;
+	private BufferedReader in;
+	private BufferedWriter out;
 	
 	Connection(ChatInstance window){
 		this.window=window;
@@ -25,6 +25,14 @@ abstract class Connection implements Runnable{
 		this.ID=-1;
 		this.in=null;
 		this.out=null;
+	}
+	
+	String getName() {
+		return name;
+	}
+	
+	void setName(String name) {
+		this.name = name;
 	}
 	
 	boolean connect(String address) {
@@ -73,6 +81,10 @@ abstract class Connection implements Runnable{
 		return true;
 	}
 	
+	/**
+	 * Initialisiert IO Objekte
+	 * @throws Fehler wenn Verbindung nicht hergestellt (Exception)
+	 */
 	private void connectionDetails() throws Exception {
 		try {
 	    	in = new BufferedReader(
@@ -96,6 +108,10 @@ abstract class Connection implements Runnable{
 		return isConnected;
 	}
 	
+	/**
+	 * Finale Methode die in Disconnect aufgerufen wird
+	 *
+	 */
 	abstract protected void onDisconnection();
 	
 	synchronized void disconnect(){
@@ -143,8 +159,14 @@ abstract class Connection implements Runnable{
 		return ID;
 	}
 	
-	void send(String txt) throws Exception {
+	boolean send(String txt) {
+		try {
 		out.write(txt); out.newLine(); out.flush();
+		} catch (Exception e) {
+			window.appendError("Fehler beim Senden");
+			return false;
+		}
+		return true;
 	}
 	
 	abstract protected void initProtocol();

@@ -1,5 +1,9 @@
 package chatty.gui;
 
+/**
+ * Konsolenfenster für Serverapplikation
+ */
+
 public class ServerWindow implements ChatInstance {
 
 	public void updateNetStatus() {

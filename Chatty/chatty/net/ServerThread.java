@@ -6,7 +6,8 @@ import java.net.Socket;
 class ServerThread extends Connection {
 	private Server server;
 		
-	ServerThread(Socket socket, int ID, Server server, ChatInstance window) throws Exception {
+	ServerThread(Server server, int ID, Socket socket, 
+			ChatInstance window) throws Exception {
 		super(window);
 		this.server = server;
 		this.ID = ID;
@@ -16,21 +17,28 @@ class ServerThread extends Connection {
 	
 	protected void onDisconnection(){
 		server.removeServerThread(this);
+		server.sendToAll("OUT "+getName()+" hat den Chat verlassen");
+		window.appendText(getName()+" ausgeloggt");
 	}
 	
 	protected void initProtocol() {
 		try {
 		    send("YOURID "+ID);
-		    send("OUT HALLO AUF CHATTYSERVER.");
-		    send("OUT DU BIST JETZT VERBUNDEN");
-		    send("OUT DEINE ID IST "+ID);
+		    send("OUT Hallo auf Server "+server.getName());
 		} catch (Exception e) {
-			System.err.println("Chattyserver - Verbindungsfehler mit Client #"+ID);
+			window.appendError("Verbindungsfehler mit Client #"+ID);
 			disconnect();
 		}		
 	}
 	
 	protected void runProtocol(String txt) {
-		server.sendToAll(txt,ID);
+		if (txt.startsWith("LOGIN")) {
+			//Name des Clients einlesen
+			setName(txt.substring(6));
+			server.sendToAll("OUT "+getName()+" hat den Chat betreten");
+			window.appendText(getName()+" eingeloggt");
+		} else if (txt.startsWith("SENDTOALL")) {
+			server.sendToAll("OUT "+getName()+": "+txt.substring(10));
+		}
 	}
 }
