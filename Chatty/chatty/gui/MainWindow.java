@@ -7,27 +7,21 @@ package chatty.gui;
 
 import chatty.net.ClientData;
 import chatty.net.NetHandler;
-import chatty.tools.ListTools;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import chatty.gui.PersonList;
 
 public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		WindowListener {
 
 	private NetHandler nethandler;
-
 	private JMenuItem miConnect, miDisconnect, miExit, miAbout, miStartServer,
 			miStopServer;
-
 	private JButton bConnect, bSend;
-
 	private ChatArea chatArea;
-
 	private JTextField tfIn;
-
-	private JList clientJList;
-	private DefaultListModel clientList;
+	private PersonList personList;
 
 	//Initialisierung des Fensters und Starten des NetHandlers
 	public MainWindow() {
@@ -98,15 +92,11 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		scrollLog.setPreferredSize(new Dimension(520, 480));
 		scrollLog.setBorder(BorderFactory.createEtchedBorder());
 		pc.add(scrollLog, BorderLayout.WEST);
-		clientList = new DefaultListModel();
-
-		clientJList = new JList(clientList);
-		clientJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		clientJList.setFont(new Font("SansSerif", Font.ITALIC, 15));
-		JScrollPane scrollList = new JScrollPane(clientJList);
-		scrollList.setPreferredSize(new Dimension(120, 480));
-		scrollList.setBorder(BorderFactory.createEtchedBorder());
-		pc.add(scrollList, BorderLayout.EAST);
+		
+		//Seitliche Liste mit Chattern die Online sind
+		personList = new PersonList(120,480);
+		pc.add(personList.getPane(), BorderLayout.EAST);
+		
 		p.add(pc, BorderLayout.CENTER);
 
 		//Content Pane - Süd
@@ -146,13 +136,11 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		String t = "Chatty";
 		if (nethandler.isConnected()) {
 			t += " - verbunden als " + nethandler.getClientData().getName();
-			String alle = "Alle";
-			clientList.addElement(alle);
-			clientJList.setSelectedValue(alle,true);
+			personList.initOnConnect();
 			tfIn.requestFocus();
 		} else {
 			t += " - nicht verbunden";
-			clientList.removeAllElements();
+			personList.removeAllElements();
 		}
 		if (nethandler.isServer())
 			t += " - Servermodus";
@@ -174,21 +162,11 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 	}
 
 	public void addToList(ClientData newClient) {
-	    ListTools.nextColor();
-	    clientList.addElement(newClient);
-		Object o = clientList.get(clientJList.getSelectedIndex());
-		ListTools.sortClientList(clientList);
-		clientJList.setSelectedIndex(clientList.indexOf(o));
+	    personList.addPerson(newClient);
 	}
 
 	public void removeFromList(ClientData clientToRemove) {
-	    Object o = clientList.get(clientJList.getSelectedIndex());
-	    ListTools.removeFromClientList(clientList,clientToRemove);
-	    int i = clientList.indexOf(o);
-	    //wenn selektierter client gelöscht, selektiere alle
-	    if (i<0)
-	        i=0;
-	    clientJList.setSelectedIndex(i);
+	    personList.remove(clientToRemove);
 	}
 
 	//EventHandling - ActionListener
@@ -232,7 +210,7 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 			//Senden
 		} else if (src == bSend || (src == tfIn && bSend.isEnabled())) {
 			String txt = tfIn.getText();
-			Object selected = clientJList.getSelectedValue();
+			Object selected = personList.getSelected();
 			if (selected==null || selected instanceof String)
 				nethandler.sendMessage(txt);
 			else

@@ -11,19 +11,13 @@ import chatty.net.ClientData;
 import chatty.net.NetHandler;
 
 class ChatArea extends JTextPane{
-    //protected JTextPane taOut;
     
     ChatArea(){
-        //taOut = new JTextPane();
         super();
         setFont(new Font("Serif", Font.PLAIN, 14));
         setEditable(false);
     }
-    
-    /*public JTextPane getTextArea() {
-        return taOut;
-    }*/
-    
+
     void appendText(NetHandler nethandler,String txt,Object source) {
 		Document doc = getDocument();
 		String name = "";
