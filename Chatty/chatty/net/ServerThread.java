@@ -37,9 +37,9 @@ class ServerThread extends Connection {
 	    myClientData().setFromString(daten);
 	    myClientData().setID(IDtemp);
 		//Gibt jedem Client die Anweisung, den neuen in seine Liste aufzunehmen
-		server.sendToAll("ADDCL "+myClientData().convertToString());
+		server.sendToAllOther("ADDCL "+myClientData().convertToString(),this);
+		server.sendClientList("ADDCL ",this);
 		server.sendToAll("OUT "+getName()+" hat den Chat betreten");
-		server.sendClientList(this);
 		window.appendText(getName()+" eingeloggt");
 	}
 	

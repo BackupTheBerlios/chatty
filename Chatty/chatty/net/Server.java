@@ -87,15 +87,23 @@ class Server implements Runnable {
 		}
 	}
 	
+	void sendToAllOther(String txt,ServerThread notMe){
+		for (int i=0; i<list.size(); i++) {
+			ServerThread t = (ServerThread)(list.get(i));
+			if (t!=notMe)
+				t.send(txt);
+		}
+	}
+	
+	
 	/**
 	 * Sendet die Liste mit den schon verbundenen Clients
 	 * @param ServerThread der Liste erhalten soll
 	 */
-	void sendClientList(ServerThread thread){
+	void sendClientList(String command,ServerThread thread){
 	    for (int i=0; i<list.size(); i++) {
 			ServerThread t = (ServerThread)(list.get(i));
-			if(t!=thread)
-			    thread.send("ADDCL "+t.myClientData().convertToString());
+			thread.send(command+t.myClientData().convertToString());
 		}
 	}
 		
