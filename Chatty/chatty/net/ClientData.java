@@ -1,7 +1,8 @@
 package chatty.net;
 
 import java.awt.Color;
-import chatty.tools.*;
+
+import chatty.tools.ListTools;
 
 /**
  * Beeinhaltet alle möglichen Daten über Clienten
@@ -19,7 +20,7 @@ public class ClientData {
         ID=-1;
         comment = "";
         address ="local";
-        color = ListTools.getNextColor();
+        color = ListTools.getColor();
     }
     
     String convertToString(){
@@ -58,6 +59,10 @@ public class ClientData {
 		return color;
 	}
 	
+    public void setColor(Color color) {
+        this.color = color;
+    }
+    
     public String getName() {
         return userName;
     }

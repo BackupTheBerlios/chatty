@@ -14,15 +14,17 @@ public class ListTools {
     private static Color[] colors = { 
     	Color.red, Color.green.darker(), 
     	Color.blue, Color.lightGray, Color.magenta };
-   
-    private static int currentColor = 0;
     
-    static public Color getNextColor() {
-    	Color color = colors[currentColor];
-		if (currentColor!=colors.length-1)
-			currentColor++;
-		else
-			currentColor = 0;
+    static int currentColor=0;
+    
+    public static void nextColor(){
+        currentColor++;
+    }
+    
+    static public Color getColor() {
+    	if(currentColor>=colors.length)
+    	    currentColor=0;
+        Color color = colors[currentColor];
     	return color;
     }
     

@@ -2,6 +2,7 @@ package chatty.net;
 
 import chatty.gui.ChatInstance;
 import chatty.tools.ClientList;
+import chatty.tools.ListTools;
 
 /*
  * DID parseteil "revolutioniert"
@@ -29,7 +30,7 @@ public class Client extends Connection {
 	}
 	
 	protected void initProtocol() {
-		send("LOGIN * "+getClientData().convertToString());
+	    send("LOGIN * "+getClientData().convertToString());
 	}
 	
 	protected void runProtocol(String txt) {
@@ -47,6 +48,7 @@ public class Client extends Connection {
         } else if(msg[0].equals("ADDCL")){
             //Client soll in Liste hinzugefügt werden
             ClientData neu = new ClientData();
+    	    ListTools.nextColor();
             neu.setFromString(msg[2]);
             clientList.add(neu);
             window.addToList(neu);
