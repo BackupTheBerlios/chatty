@@ -55,7 +55,7 @@ public class Client extends Connection {
             clientToRemove.setFromString(msg[2]);
             removeFromClientList(clientToRemove);
             window.removeFromList(clientToRemove);
-            window.appendText(clientToRemove.getName()+" hat den Chat verlassen",this);
+            window.appendText(clientToRemove.getName()+" hat den Chat verlassen",null);
         }
 	}
         
