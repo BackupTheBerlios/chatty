@@ -17,8 +17,9 @@ public class NetHandler {
 	
 	//Sever Handling
 	public void startServer() {
-		server.startServer();
-		client.connect("localhost");
+		//Hier vielleicht nen Fehlerdialog ausgeben
+	    if(server.startServer())
+		    client.connect("localhost");
 	}
 	
 	public void stopServer() {

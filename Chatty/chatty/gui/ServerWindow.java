@@ -1,6 +1,8 @@
 package chatty.gui;
 
 import java.util.*;
+
+import chatty.net.ClientData;
 /**
  * Konsolenfenster für Serverapplikation
  */
@@ -12,7 +14,7 @@ public class ServerWindow implements ChatInstance {
 	    String[] time = new String[3];
 	    time[0] = cal.get(Calendar.HOUR_OF_DAY)+""; 
 	    time[1] = cal.get(Calendar.MINUTE)+"";
-	    time[2] = cal.get(Calendar.SECOND)+"";     
+	    time[2] = cal.get(Calendar.SECOND)+"";
 	    for(int i=0;i<3;i++)
 	        if(time[i].length()==1)
 	            time[i]="0"+time[i];
@@ -32,5 +34,12 @@ public class ServerWindow implements ChatInstance {
 
 	public void clearText() {	    
 	}
+	
+    public void addToList(ClientData newClient) {
+    }
+
+    public void removeFromList(ClientData client) {
+    }
+
 
 }

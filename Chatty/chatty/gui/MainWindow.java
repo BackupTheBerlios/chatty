@@ -2,8 +2,11 @@ package chatty.gui;
 
 /**
  * Hauptfenster für Chattyclient
+ * TODO Benutzername darf kein "/" enthalten
+ * entweder neue Eingabe oder herausschneiden
  */
 
+import chatty.net.ClientData;
 import chatty.net.NetHandler;
 import java.awt.*;
 import java.awt.event.*;
@@ -22,6 +25,8 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 	private JTextArea taOut;
 
 	private JTextField tfIn;
+	
+	private DefaultListModel clientList;
 
 	//Initialisierung des Fensters und Starten des NetHandlers
 	public MainWindow() {
@@ -90,8 +95,13 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		taOut.setEditable(false);
 		taOut.setLineWrap(true);
 		JScrollPane scrollPane = new JScrollPane(taOut);
-		scrollPane.setPreferredSize(new Dimension(640, 480));
+		scrollPane.setPreferredSize(new Dimension(520, 480));
 		pc.add(scrollPane);
+		clientList = new DefaultListModel();
+		JList clientJList = new JList(clientList);
+		JScrollPane scrollList = new JScrollPane(clientJList);
+		scrollList.setPreferredSize(new Dimension(120,480));
+		pc.add(scrollList);
 		pc.setBorder(BorderFactory.createEtchedBorder());
 		p.add(pc, BorderLayout.CENTER);
 
@@ -135,6 +145,7 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 			tfIn.requestFocus();
 		} else {
 			t += " - nicht verbunden";
+			clientList.removeAllElements();
 		}
 		if (nethandler.isServer())
 			t += " - Servermodus";
@@ -154,6 +165,19 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 	public void clearText() {
 		taOut.setText("");
 	}
+	
+    public void addToList(ClientData newClient) {
+        clientList.addElement(newClient);
+    }
+
+   public void removeFromList(ClientData clientToRemove){
+        for(int i=0;i<clientList.size();i++){
+            ClientData c = (ClientData)clientList.get(i);
+            if(clientToRemove.getID()==c.getID())
+                clientList.remove(i);
+        }
+    }
+    
 
 	//EventHandling - ActionListener
 	public void actionPerformed(ActionEvent event) {
@@ -199,6 +223,8 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 			tfIn.selectAll();
 		}
 	}
+	
+	public void test(){}
 
 	//Event Handling - WindowListener
 	public void windowOpened(WindowEvent e) {
@@ -223,5 +249,6 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 
 	public void windowIconified(WindowEvent e) {
 	}
+
 
 }

@@ -24,7 +24,7 @@ class Server implements Runnable {
 		return name;
 	}
 	
-	void startServer() {
+	boolean startServer() {
 		//Alten Server runterfahren
 		stopServer();
 		//Neuen Server hochfahren
@@ -33,11 +33,12 @@ class Server implements Runnable {
 			window.appendText("Hochgefahren");
 		} catch (Exception e) {
 			window.appendError("Hochfahren nicht möglich");
-			return;
+			return false;
 		}
 		list = new ArrayList();
 		Thread thread = new Thread(this);
 		thread.start();	
+		return true;
 	}
 	
 	boolean isRunning() {

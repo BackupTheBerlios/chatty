@@ -18,7 +18,8 @@ class ServerThread extends Connection {
 	protected void onDisconnection(){
 		server.removeServerThread(this);
 	    server.sendToAll("OUT "+getName()+" hat den Chat verlassen");
-		window.appendText(getName()+" ausgeloggt");
+		server.sendToAll("REMLI "+myClientData().convertToString());
+	    window.appendText(getName()+" ausgeloggt");
 	}
 	
 	protected void initProtocol() {

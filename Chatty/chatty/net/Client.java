@@ -1,6 +1,7 @@
 package chatty.net;
 
 import java.util.ArrayList;
+
 import chatty.gui.ChatInstance;
 
 /*
@@ -21,7 +22,7 @@ public class Client extends Connection {
 	}
 	
 	protected void onDisconnection() {
-		
+		ClientList.clear();
 	}
 	
 	protected void initProtocol() {
@@ -35,12 +36,27 @@ public class Client extends Connection {
         } else if(msg[0].equals("OUT")){
         	//Text is angekommen
             window.appendText(msg[1]);
+            
         } else if(msg[0].equals("ADDLI")){
             //Client soll in Liste hinzugefügt werden
             ClientData neu = new ClientData();
             neu.setFromString(msg[1]);
             ClientList.add(neu);
+            window.addToList(neu);
+        } else if(msg[0].equals("REMLI")){
+            ClientData clientToRemove = new ClientData();
+            clientToRemove.setFromString(msg[1]);
+            removeFromClientList(clientToRemove);
+            window.removeFromList(clientToRemove);
         }
 	}
+        
+        private void removeFromClientList(ClientData clientToRemove){
+            for(int i=0;i<ClientList.size();i++){
+                ClientData c = (ClientData)ClientList.get(i);
+                if(clientToRemove.getID()==c.getID())
+                    ClientList.remove(i);
+            }
+        }
 
 }

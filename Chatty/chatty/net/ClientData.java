@@ -18,11 +18,15 @@ public class ClientData {
     }
     
     String convertToString(){
-        return userName + " " + address + " " + ID + " " + comment;
+        return userName + "/" + address + "/" + ID + "/" + comment;
+    }
+    
+    public String toString(){
+        return userName;
     }
     
     void setFromString(String data){
-        String[] temp = data.split(" ",4);
+        String[] temp = data.split("/",4);
         userName = temp[0];
         address  = temp[1];
         ID		 = Integer.valueOf(temp[2]).intValue();
