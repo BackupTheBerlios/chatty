@@ -90,19 +90,20 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		p.add(toolbar, BorderLayout.NORTH);
 
 		//Content Pane - Center
-		JPanel pc = new JPanel(new FlowLayout());
+		JPanel pc = new JPanel(new BorderLayout());
 		taOut = new JTextArea();
 		taOut.setEditable(false);
 		taOut.setLineWrap(true);
-		JScrollPane scrollPane = new JScrollPane(taOut);
-		scrollPane.setPreferredSize(new Dimension(520, 480));
-		pc.add(scrollPane);
+		JScrollPane scrollLog = new JScrollPane(taOut);
+		scrollLog.setPreferredSize(new Dimension(520, 480));
+		scrollLog.setBorder(BorderFactory.createEtchedBorder());
+		pc.add(scrollLog,BorderLayout.WEST);
 		clientList = new DefaultListModel();
 		JList clientJList = new JList(clientList);
 		JScrollPane scrollList = new JScrollPane(clientJList);
 		scrollList.setPreferredSize(new Dimension(120,480));
-		pc.add(scrollList);
-		pc.setBorder(BorderFactory.createEtchedBorder());
+		scrollList.setBorder(BorderFactory.createEtchedBorder());
+		pc.add(scrollList,BorderLayout.EAST);
 		p.add(pc, BorderLayout.CENTER);
 
 		//Content Pane - Süd
@@ -131,8 +132,8 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		//Username erfragen
 		String name = null;
 		while (name==null)
-			name = JOptionPane.showInputDialog(this,"Username","Usernamen wählen",
-				JOptionPane.QUESTION_MESSAGE);
+			name = JOptionPane.showInputDialog("Username wählen",
+					System.getProperty("user.name"));
 		nethandler.setName(name);
 	}
 
@@ -185,7 +186,8 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 
 		//Menu - Chatty - Verbinden
 		if (src == bConnect || src == miConnect) {
-			String s = JOptionPane.showInputDialog("address:port or address",
+			String s = JOptionPane.showInputDialog(
+					"Bitte Adresse nach dem Schema 'address:port' oder 'address' eigeben",
 					"localhost");
 			if (s==null)
 				return;
