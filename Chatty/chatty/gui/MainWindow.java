@@ -135,6 +135,10 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		taOut.append(txt + "\n");
 		taOut.setCaretPosition(taOut.getText().length());
 	}
+	
+	public void appendError(String txt) {
+		appendText("FEHLER: "+txt);
+	}
 
 	public void clearText() {
 		taOut.setText("");

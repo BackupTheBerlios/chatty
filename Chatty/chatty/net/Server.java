@@ -52,6 +52,7 @@ class Server implements Runnable {
 			ServerThread t = (ServerThread)(list.get(0));
 			System.out.println("Chattyserver - Entfernen des Serverthreads #"+t.getID());
 			t.disconnect();
+			
 		}
 	}
 	

@@ -1,6 +1,7 @@
 package chatty.net;
 
 import chatty.gui.ChatInstance;
+import chatty.gui.ServerWindow;
 
 public class NetHandler {
 	
@@ -10,7 +11,7 @@ public class NetHandler {
 	
 	public NetHandler(ChatInstance window) {
 		this.window = window;
-		server = new Server(window);
+		server = new Server(new ServerWindow());
 		client = new Client(window);
 	}
 	
