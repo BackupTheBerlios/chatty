@@ -45,18 +45,22 @@ public class NetHandler {
 		client.sendMessage(txt);
 	}
 	
+	public void sendMessage(ClientData toClient, String txt) {
+		client.sendMessage(toClient,txt);
+	}
+	
 	public boolean isConnected() {
 		return client.isConnected();
 	}
 	
 	//Handling von Server und Client
 	public void setName(String name) {
-		client.setName(name);
+		client.getClientData().setName(name);
 		server.setName(name);
 	}
 	
-	public String getClientName() {
-		return client.getName();
+	public ClientData getClientData() {
+		return client.getClientData();
 	}
 	
 	public void exit() {

@@ -1,8 +1,7 @@
 package chatty.gui;
 
 /**
- * Hauptfenster für Chattyclient
- * TODO Benutzername darf kein "/" enthalten
+ * Hauptfenster für Chattyclient TODO Benutzername darf kein "/" enthalten
  * entweder neue Eingabe oder herausschneiden
  */
 
@@ -12,6 +11,7 @@ import chatty.tools.ListTools;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.text.*;
 
 public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		WindowListener {
@@ -23,10 +23,11 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 
 	private JButton bConnect, bSend;
 
-	private JTextArea taOut;
+	private JTextPane taOut;
 
 	private JTextField tfIn;
-	
+
+	private JList clientJList;
 	private DefaultListModel clientList;
 
 	//Initialisierung des Fensters und Starten des NetHandlers
@@ -92,21 +93,23 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 
 		//Content Pane - Center
 		JPanel pc = new JPanel(new BorderLayout());
-		taOut = new JTextArea();
-		taOut.setFont(new Font("Serif",Font.PLAIN,14));
+		taOut = new JTextPane();
+		taOut.setFont(new Font("Serif", Font.PLAIN, 14));
 		taOut.setEditable(false);
-		taOut.setLineWrap(true);
+		//taOut.setLineWrap(true);
 		JScrollPane scrollLog = new JScrollPane(taOut);
 		scrollLog.setPreferredSize(new Dimension(520, 480));
 		scrollLog.setBorder(BorderFactory.createEtchedBorder());
-		pc.add(scrollLog,BorderLayout.WEST);
+		pc.add(scrollLog, BorderLayout.WEST);
 		clientList = new DefaultListModel();
-		JList clientJList = new JList(clientList);
-		clientJList.setFont(new Font("SansSerif",Font.ITALIC,15));
+
+		clientJList = new JList(clientList);
+		clientJList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		clientJList.setFont(new Font("SansSerif", Font.ITALIC, 15));
 		JScrollPane scrollList = new JScrollPane(clientJList);
-		scrollList.setPreferredSize(new Dimension(120,480));
+		scrollList.setPreferredSize(new Dimension(120, 480));
 		scrollList.setBorder(BorderFactory.createEtchedBorder());
-		pc.add(scrollList,BorderLayout.EAST);
+		pc.add(scrollList, BorderLayout.EAST);
 		p.add(pc, BorderLayout.CENTER);
 
 		//Content Pane - Süd
@@ -127,16 +130,16 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		pack();
 		setResizable(false);
 		setVisible(true);
-		
+
 		//NetHandler erstellen
 		nethandler = new NetHandler(this);
 		updateNetStatus();
-		
+
 		//Username erfragen
 		String name = null;
-		while (name==null)
-			name = JOptionPane.showInputDialog("Username wählen",
-					System.getProperty("user.name"));
+		while (name == null)
+			name = JOptionPane.showInputDialog("Username wählen", System
+					.getProperty("user.name"));
 		nethandler.setName(name);
 	}
 
@@ -145,7 +148,10 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 	public void updateNetStatus() {
 		String t = "Chatty";
 		if (nethandler.isConnected()) {
-			t += " - verbunden als " + nethandler.getClientName();
+			t += " - verbunden als " + nethandler.getClientData().getName();
+			String alle = "Alle";
+			clientList.addElement(alle);
+			clientJList.setSelectedValue(alle,true);
 			tfIn.requestFocus();
 		} else {
 			t += " - nicht verbunden";
@@ -157,44 +163,61 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		setTitle(t);
 	}
 
-	public void appendText(String txt) {
-		taOut.append(txt + "\n");
-		taOut.setCaretPosition(taOut.getText().length());
+	public void appendText(String txt,Object source) {
+		Document doc = taOut.getDocument();
+		String name = "";
+		SimpleAttributeSet attribute = new SimpleAttributeSet();
+		if(source instanceof ClientData){
+			ClientData user = (ClientData)source;
+			name = user.getName()+": ";
+			StyleConstants.setForeground(attribute,user.getColor());
+			if (user.getID()==nethandler.getClientData().getID())
+				StyleConstants.setItalic(attribute,true);				
+		} else if (source==null) {
+			StyleConstants.setBold(attribute,true);
+		}
+		try {
+			doc.insertString(doc.getLength(),name+txt+'\n',attribute);
+		} catch (Exception e) {}
+		taOut.setCaretPosition(doc.getLength());
 	}
-	
+
 	public void appendError(String txt) {
-	    JOptionPane.showMessageDialog(this,txt,"Fehler",JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(this, txt, "Fehler",
+				JOptionPane.ERROR_MESSAGE);
 	}
 
 	public void clearText() {
 		taOut.setText("");
 	}
-	
-	public void addToList(ClientData newClient) {
-        clientList.addElement(newClient);
-        ListTools.sortClientList(clientList);
-    }
 
-   public void removeFromList(ClientData clientToRemove){
-        for(int i=0;i<clientList.size();i++){
-            ClientData c = (ClientData)clientList.get(i);
-            if(clientToRemove.getID()==c.getID()){
-                clientList.remove(i);
-                return;
-            }
-        }
-    }
-    
+	public void addToList(ClientData newClient) {
+		clientList.addElement(newClient);
+		ListTools.sortClientList(clientList);
+	}
+
+	public void removeFromList(ClientData clientToRemove) {
+		for (int i = 0; i < clientList.size(); i++) {
+			Object c = clientList.get(i);
+			if (!(c instanceof String))
+				if (clientToRemove.getID() == ((ClientData) c).getID()) {
+					clientList.remove(i);
+					return;
+				}
+		}
+	}
+
 	//EventHandling - ActionListener
 	public void actionPerformed(ActionEvent event) {
 		Object src = event.getSource();
 
 		//Menu - Chatty - Verbinden
 		if (src == bConnect || src == miConnect) {
-			String s = JOptionPane.showInputDialog(
-					"Bitte Adresse nach dem Schema 'address:port' oder 'address' eigeben",
-					"localhost");
-			if (s==null)
+			String s = JOptionPane
+					.showInputDialog(
+							"Bitte Adresse nach dem Schema 'address:port' oder 'address' eigeben",
+							"localhost");
+			if (s == null)
 				return;
 			nethandler.connect(s);
 
@@ -225,13 +248,18 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 			//Senden
 		} else if (src == bSend || (src == tfIn && bSend.isEnabled())) {
 			String txt = tfIn.getText();
-			nethandler.sendMessage(txt);
+			Object selected = clientJList.getSelectedValue();
+			if (selected==null || selected instanceof String)
+				nethandler.sendMessage(txt);
+			else
+				nethandler.sendMessage((ClientData)selected,txt);
 			tfIn.requestFocus();
 			tfIn.selectAll();
 		}
 	}
-	
-	public void test(){}
+
+	public void test() {
+	}
 
 	//Event Handling - WindowListener
 	public void windowOpened(WindowEvent e) {
@@ -256,6 +284,5 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 
 	public void windowIconified(WindowEvent e) {
 	}
-
 
 }

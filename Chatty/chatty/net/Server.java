@@ -4,7 +4,7 @@ import chatty.gui.ChatInstance;
 import java.net.*;
 import java.util.*;
 
-class Server implements Runnable {
+public class Server implements Runnable {
 	
 	private String name;
 	private ChatInstance window;
@@ -30,7 +30,7 @@ class Server implements Runnable {
 		//Neuen Server hochfahren
 		try {
 			serverSocket = new ServerSocket(1111);
-			window.appendText("Hochgefahren");
+			window.appendText("Hochgefahren",this);
 		} catch (Exception e) {
 			window.appendError("Hochfahren nicht möglich");
 			return false;
@@ -49,7 +49,7 @@ class Server implements Runnable {
 		if (!isRunning())
 			return;
 		//Runterfahren des Servers
-		window.appendText("Entfernen des Servers");
+		window.appendText("Entfernen des Servers",this);
 		try {
 			serverSocket.close();
 		} catch (Exception e) {}
@@ -59,10 +59,10 @@ class Server implements Runnable {
 			return;
 		while (!list.isEmpty()) {
 			ServerThread t = (ServerThread)(list.get(0));
-			window.appendText("Entfernen des Serverthreads #"+t.getID());
+			window.appendText("Entfernen des Serverthreads #"+t.getClientData().getID(),this);
 			t.disconnect();
 		}
-		window.appendText("Server ordnungsgemäß heruntergefahren");
+		window.appendText("Server ordnungsgemäß heruntergefahren",this);
 	}
 	
 	public void run() {
@@ -80,6 +80,17 @@ class Server implements Runnable {
 	    list.remove(t);
 	}
 	
+	void sendTo(ServerThread from, int toID,String msg){
+		for (int i=0; i<list.size();i++) {
+			ServerThread thread = (ServerThread)(list.get(i));
+			if (thread.getClientData().getID()==toID) {
+				thread.send(msg);
+				return;
+			}
+		}
+		window.appendError("Fehler beim Senden an ID "+toID);
+	}
+	
 	void sendToAll(String txt){
 		for (int i=0; i<list.size(); i++) {
 			ServerThread t = (ServerThread)(list.get(i));
@@ -95,7 +106,6 @@ class Server implements Runnable {
 		}
 	}
 	
-	
 	/**
 	 * Sendet die Liste mit den schon verbundenen Clients
 	 * @param ServerThread der Liste erhalten soll
@@ -103,7 +113,7 @@ class Server implements Runnable {
 	void sendClientList(String command,ServerThread thread){
 	    for (int i=0; i<list.size(); i++) {
 			ServerThread t = (ServerThread)(list.get(i));
-			thread.send(command+t.myClientData().convertToString());
+			thread.send(command+t.getClientData().convertToString());
 		}
 	}
 		

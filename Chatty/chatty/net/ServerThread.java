@@ -10,45 +10,50 @@ class ServerThread extends Connection {
 			ChatInstance window) throws Exception {
 		super(window);
 		this.server = server;
-		myClientData().setID(ID);
+		getClientData().setID(ID);
 		if(!connect(socket))
 			throw new Exception();
 	}
 	
 	protected void onDisconnection(){
 		server.removeServerThread(this);
-		server.sendToAll("REMCL "+myClientData().convertToString());
-	    window.appendText(getName()+" ausgeloggt");
+		server.sendToAll("REMCL * "+getClientData().convertToString());
+	    window.appendText(getClientData().getName()+" ausgeloggt",this);
 	}
 	
 	protected void initProtocol() {
 		try {
-		    send("YOURID "+getID());
-		    send("OUT Hallo auf Server "+server.getName());
+		    send("YOURID * "+getClientData().getID());
+		    send("OUT * Hallo auf Server "+server.getName());
 		} catch (Exception e) {
-			window.appendError("Verbindungsfehler mit Client #"+getID());
+			window.appendError("Verbindungsfehler mit Client #"+getClientData().getID());
 			disconnect();
 		}		
 	}
 	
 	private void loginClient(String daten){
 	    //Daten des Clients auslesen - ID noch fehlerhaft
-	    int IDtemp = getID();
-	    myClientData().setFromString(daten);
-	    myClientData().setID(IDtemp);
+	    int IDtemp = getClientData().getID();
+	    getClientData().setFromString(daten);
+	    getClientData().setID(IDtemp);
 		//Gibt jedem Client die Anweisung, den neuen in seine Liste aufzunehmen
-		server.sendToAllOther("ADDCL "+myClientData().convertToString(),this);
-		server.sendClientList("ADDCL ",this);
-		server.sendToAll("OUT "+getName()+" hat den Chat betreten");
-		window.appendText(getName()+" eingeloggt");
+		server.sendToAllOther("ADDCL * "+getClientData().convertToString(),this);
+		server.sendClientList("ADDCL * ",this);
+		server.sendToAll("OUT * "+getClientData().getName()+" hat den Chat betreten");
+		window.appendText(getClientData().getName()+" eingeloggt",this);
 	}
 	
 	protected void runProtocol(String txt) {
-		String[] msg = txt.split(" ",2);
+		String[] msg = txt.split(" ",3);
 	    if (msg[0].equals("LOGIN")) {
-			loginClient(msg[1]);
+			loginClient(msg[2]);
 		} else if (msg[0].equals("SENDTOALL")) {
-			server.sendToAll("OUT "+getName()+": "+msg[1]);
+			server.sendToAll("OUT "+getClientData().getID()+" "+msg[2]);
+		} else if (msg[0].equals("SEND")){
+			int ID = Integer.parseInt(msg[1]);
+			server.sendTo(this,ID,"OUT "+getClientData().getID()+" "+msg[2]);
+			if (ID!=getClientData().getID())
+				send("OUT "+getClientData().getID()+" "+msg[2]);
 		}
 	}
 }

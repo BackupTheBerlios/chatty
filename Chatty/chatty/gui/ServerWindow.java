@@ -24,7 +24,7 @@ public class ServerWindow implements ChatInstance {
     public void updateNetStatus() {
 	}
 
-	public void appendText(String text) {
+	public void appendText(String text,Object source) {
 		System.out.println(getTime()+text);
 	}
 

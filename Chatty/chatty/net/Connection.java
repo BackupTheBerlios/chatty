@@ -26,16 +26,8 @@ abstract class Connection implements Runnable{
 		clientData = new ClientData();
 		clientData.setID(-1);
 	}
-	
-	final String getName() {
-		return clientData.getName();
-	}
-	
-	final void setName(String name) {
-		clientData.setName(name);
-	}
-	
-	final ClientData myClientData(){
+
+	final ClientData getClientData(){
 	    return clientData;
 	}
 	
@@ -96,7 +88,7 @@ abstract class Connection implements Runnable{
 	    	out = new BufferedWriter(
 	    			new OutputStreamWriter(socket.getOutputStream()));
 	    	window.clearText();
-	    	window.appendText("Verbindung hergestellt");
+	    	window.appendText("Verbindung hergestellt",this);
 	    } catch (Exception e) {
 	    	socket = null;
 	    	in = null;
@@ -121,13 +113,13 @@ abstract class Connection implements Runnable{
 	final synchronized void disconnect(){
 		if (isConnected) {
 			isConnected=false;
-			window.appendText("Verbindung wird getrennt");
+			window.appendText("Verbindung wird getrennt",this);
 			try {
 				out.flush();
 				out.close();
 				socket.close();
 			} catch (Exception e) {
-				window.appendText("Fehler beim Trennen der Verbindung");
+				window.appendText("Fehler beim Trennen der Verbindung",this);
 			}
 			in = null;
 			out = null;
@@ -153,14 +145,10 @@ abstract class Connection implements Runnable{
 				disconnect();
 				continue;
 			} catch (Exception e) {
-				window.appendError("Verbindungsproblem durch ID"+getID());
+				window.appendError("Verbindungsproblem durch ID"+clientData.getID());
 			}
 			runProtocol(txt);
 		}		    
-	}
-	
-	final int getID() {
-		return clientData.getID();
 	}
 	
 	boolean send(String txt) {
