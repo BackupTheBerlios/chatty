@@ -50,10 +50,8 @@ public class PersonList extends DefaultListModel {
     
     void addPerson(ClientData newClient){
         ListTools.nextColor();
-        Object o = get(clientJList.getSelectedIndex());
         //einfügen in schon SORTIERTE Liste an richtiger Stelle
         ListTools.insertInList(this,newClient);
-        clientJList.setSelectedIndex(indexOf(o));
     }
     
     /**
@@ -61,7 +59,7 @@ public class PersonList extends DefaultListModel {
      *wird Auswahl auf Alle gesetzt
      */
     void remove(ClientData clientToRemove) {
-	    Object o = get(clientJList.getSelectedIndex());
+	    Object o = getSelected();
 	    ListTools.removeFromClientList(this,clientToRemove);
 	    int i = indexOf(o);
 	    //wenn selektierter client gelöscht, selektiere alle
