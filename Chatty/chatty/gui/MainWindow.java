@@ -92,6 +92,7 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		//Content Pane - Center
 		JPanel pc = new JPanel(new BorderLayout());
 		taOut = new JTextArea();
+		taOut.setFont(new Font("Serif",Font.PLAIN,14));
 		taOut.setEditable(false);
 		taOut.setLineWrap(true);
 		JScrollPane scrollLog = new JScrollPane(taOut);
@@ -100,6 +101,7 @@ public class MainWindow extends JFrame implements ChatInstance, ActionListener,
 		pc.add(scrollLog,BorderLayout.WEST);
 		clientList = new DefaultListModel();
 		JList clientJList = new JList(clientList);
+		clientJList.setFont(new Font("SansSerif",Font.ITALIC,15));
 		JScrollPane scrollList = new JScrollPane(clientJList);
 		scrollList.setPreferredSize(new Dimension(120,480));
 		scrollList.setBorder(BorderFactory.createEtchedBorder());
